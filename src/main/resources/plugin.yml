@@ -1,5 +1,11 @@
 name: CropXP
 version: 1.1
-author: Euronite
-main: com.github.euronite.cropxp.CropXP
+author: Flintstqne
+main: com.flintstqne.cropxp.CropXP
 api-version: 1.16
+
+commands:
+  cropxp:
+    description: CropXP command
+    usage: /<command> [reload]
+    aliases: [cxp]

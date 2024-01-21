@@ -1,4 +1,4 @@
-package com.github.euronite.cropxp;
+package com.flintstqne.cropxp;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -14,32 +14,40 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class BlockChangeListener implements Listener {
     private static final ArrayList<Material> materials = new ArrayList<>();
+    private static final List<BlockFace> blockFaces = List.of(BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH);
+
 
     List<Material> cropOptions = List.of(Material.POTATOES, Material.CARROTS, Material.COCOA, Material.BEETROOTS, Material.WHEAT, Material.MELON, Material.PUMPKIN, Material.NETHER_WART);
-
-    private static final List<BlockFace> blockFaces = List.of(BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST, BlockFace.SOUTH);
     int xpAmount;
 
     public BlockChangeListener(FileConfiguration config, Plugin plugin) {
-        xpAmount = config.getInt("xpAmount");
-        if (xpAmount < 1) {
-            xpAmount = 0;
-            plugin.getLogger().severe("Invalid XP amount, default set to 0");
-        }
+        // Retrieve default XP values for crops from the configuration
+        Map<String, Integer> defaultXpValues = (Map<String, Integer>) config.get("xpAmounts");
 
+        // Set default XP amount for crops
         for (String material : config.getStringList("xpCrops")) {
             if (Material.getMaterial(material) == null) {
                 plugin.getLogger().severe("Invalid material type, skipping!");
+                continue;
             }
+
             if (cropOptions.contains(Material.getMaterial(material))) {
                 materials.add(Material.getMaterial(material));
+                xpAmount = defaultXpValues.getOrDefault(material, config.getInt("xpAmount"));
             } else {
                 plugin.getLogger().warning("Unsupported crop type, skipping!");
             }
+        }
+
+        // If xpAmount is still 0, log a warning
+        if (xpAmount < 1) {
+            xpAmount = 0;
+            plugin.getLogger().severe("Invalid XP amount, default set to 0");
         }
     }
 
